@@ -101,7 +101,9 @@ class TestProcessEmptyValues(unittest.TestCase):
         result = get_transform_result(dataset, transformer)
 
         self.assertEqual(2, result[1][0])
-        
+
+    def test_fail(self):
+        self.assertTrue(False)
 
 if __name__ == '__main__':
     unittest.main()
