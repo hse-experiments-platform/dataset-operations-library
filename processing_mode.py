@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum, auto
 
-class ProcessingMode(Enum):
-    DeleteRow = 'DeleteRow'
-    FillWithConstant = 'FillWithConstant'
-    FillWithTypeDefault = 'FillWithTypeDefault'
-    FillWithAggregateFunction = 'FillWithAggregateFunction'
+class ProcessingMode(StrEnum):
+    DeleteRow = auto()
+    FillWithConstant = 'constant'
+    FillWithTypeDefault = 'typedefault'
+    FillWithAggregateFunction = 'aggregatefunction'
