@@ -28,7 +28,7 @@ class TestProcessEmptyValues(unittest.TestCase):
         dataset = pd.DataFrame({'a': pd.Series(['a', 'b', 'c'])})
         empties_settings = EmptiesStrategy(ProcessingMode.TypeDefault)
         with self.assertRaises(ValueError):
-            get_empties_transformer('a', AcceptedType.Enum, dataset, empties_settings)
+            get_empties_transformer('a', AcceptedType.Categorial, dataset, empties_settings)
 
     def test_deleteRow(self):
         dataset = pd.DataFrame({'a': pd.Series([1, np.nan, 3])})
@@ -88,7 +88,7 @@ class TestProcessEmptyValues(unittest.TestCase):
         dataset = pd.DataFrame({'a': pd.Series(['Moscow', 'Barcelona', np.nan, 'Moscow'])})
         empties_settings = EmptiesStrategy(ProcessingMode.AggregateFunction, aggregate_function=AggregateFunction.MostFrequent)
         
-        transformer = get_empties_transformer('a', AcceptedType.Enum, dataset, empties_settings)
+        transformer = get_empties_transformer('a', AcceptedType.Categorial, dataset, empties_settings)
         result = get_transform_result(dataset, transformer)
 
         self.assertEqual('Moscow', result[2][0])
