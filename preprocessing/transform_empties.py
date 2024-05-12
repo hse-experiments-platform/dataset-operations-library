@@ -15,28 +15,28 @@ def create_transformer(strategy: str, column_name: str, fill_value: any = None):
     return (get_transform_name(strategy, column_name), imputer, [column_name])
 
 
-def get_empties_transformer(column_name: str, column_type: AcceptedTypes, dataset: pd.DataFrame, empties_strategy: EmptiesStrategy):
+def get_empties_transformer(column_name: str, column_type: AcceptedType, dataset: pd.DataFrame, empties_strategy: EmptiesStrategy):
     if dataset[column_name].isin(['', None, pd.NA]).any():
         raise ValueError("Dataset contains not processable empty values.")
     if dataset[column_name].isnull().all() and not empties_strategy.is_mode_available_for_all_nulls():
         raise ValueError("Cannot replace empty values when all values are null.")
 
-    if column_type == AcceptedTypes.Enum and not empties_strategy.is_mode_available_for_enum():
+    if column_type == AcceptedType.Categorial and not empties_strategy.is_mode_available_for_enum():
         raise ValueError("Cannot fill enum type with default value.")
 
     if empties_strategy.technique == ProcessingMode.DeleteRow:
         dataset.dropna(subset=[column_name], inplace=True)
         return None
     
-    elif empties_strategy.technique == ProcessingMode.FillWithConstant:
+    elif empties_strategy.technique == ProcessingMode.Constant:
         return create_transformer('constant', column_name, empties_strategy.constant_value)
 
-    elif empties_strategy.technique == ProcessingMode.FillWithTypeDefault:
+    elif empties_strategy.technique == ProcessingMode.TypeDefault:
         str(column_type)
-        column_default = eval(str(column_type))()
+        column_default = eval(str(column_type).lower())()
         return create_transformer('constant', column_name, column_default)
 
-    elif empties_strategy.technique == ProcessingMode.FillWithAggregateFunction:
+    elif empties_strategy.technique == ProcessingMode.AggregateFunction:
         if empties_strategy.aggregate_function == AggregateFunction.Max:
             max_value = dataset[column_name].max()
             return create_transformer('constant', column_name, max_value)
@@ -45,7 +45,7 @@ def get_empties_transformer(column_name: str, column_type: AcceptedTypes, datase
             min_value = dataset[column_name].min()
             return create_transformer('constant', column_name, min_value)
 
-        elif empties_strategy.aggregate_function == AggregateFunction.Average:
+        elif empties_strategy.aggregate_function == AggregateFunction.Mean:
             return create_transformer('mean', column_name)
 
         elif empties_strategy.aggregate_function == AggregateFunction.MostFrequent:

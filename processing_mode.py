@@ -1,7 +1,7 @@
 from enum import StrEnum, auto
 
 class ProcessingMode(StrEnum):
-    DeleteRow = auto()
-    FillWithConstant = 'constant'
-    FillWithTypeDefault = 'typedefault'
-    FillWithAggregateFunction = 'aggregatefunction'
+    DeleteRow = 'DeleteRow'
+    Constant = 'Constant'
+    TypeDefault = 'TypeDefault'
+    AggregateFunction = 'AggregateFunction'

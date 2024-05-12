@@ -22,8 +22,8 @@ class TransformTests(unittest.TestCase):
 
     def test_scalingAndEncodingApplied(self):
         dataset = pd.DataFrame({
-                'age': pd.Series([10, 20, 30, 40], dtype='int64'),
-                'city': pd.Series(['New York', 'Los Angeles', 'Chicago', 'Houston'], dtype='string')
+                'city': pd.Series(['New York', 'Los Angeles', 'Chicago', 'Houston'], dtype='string'),
+                'age': pd.Series([10, 20, 30, 40], dtype='int64')
             }
         )
         settings = {
@@ -36,6 +36,7 @@ class TransformTests(unittest.TestCase):
         }
 
         transformed_dataset = transform(dataset, settings)
+        print(transformed_dataset.columns)
 
         self.assertSeriesEqual(transformed_dataset['age'], np.array([0, 0.33, 0.67, 1]))
 
@@ -57,7 +58,7 @@ class TransformTests(unittest.TestCase):
                     detecting_mode=OutliersDetectingMode.MinMax,
                     outlier_min=0,
                     outlier_max=40,
-                    processing_mode=ProcessingMode.FillWithConstant,
+                    processing_mode=ProcessingMode.Constant,
                     constant_value=40
                 )
             )

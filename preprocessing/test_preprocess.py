@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from .schema import *
 from .preprocess import *
+from ..accepted_types import *
 
 def get_dataset():
     dataset = pd.DataFrame(
@@ -16,9 +17,12 @@ def get_dataset():
 
 def get_settings():
     settings = {
-        'a': DatasetPreprocessingSettings('int', EmptiesStrategy(ProcessingMode.FillWithAggregateFunction, aggregate_function=AggregateFunction.Max)),
-        'b': DatasetPreprocessingSettings('categorial', EmptiesStrategy(ProcessingMode.DeleteRow)),
-        'c': DatasetPreprocessingSettings('float', EmptiesStrategy(ProcessingMode.FillWithAggregateFunction, aggregate_function=AggregateFunction.Min)),
+        'a': DatasetPreprocessingSettings(AcceptedType.Int,
+                EmptiesStrategy(ProcessingMode.AggregateFunction, aggregate_function=AggregateFunction.Max)),
+        'b': DatasetPreprocessingSettings(AcceptedType.Categorial,
+                EmptiesStrategy(ProcessingMode.DeleteRow)),
+        'c': DatasetPreprocessingSettings(AcceptedType.Float,
+                EmptiesStrategy(ProcessingMode.AggregateFunction, aggregate_function=AggregateFunction.Min)),
     }
     return settings
 
@@ -28,8 +32,10 @@ class PreprocessTests(unittest.TestCase):
         dataset = get_dataset()
 
         settings = {
-            'a': DatasetPreprocessingSettings('int', EmptiesStrategy(ProcessingMode.FillWithAggregateFunction, aggregate_function=AggregateFunction.Max)),
-            'b': DatasetPreprocessingSettings('categorial', EmptiesStrategy(ProcessingMode.DeleteRow)),
+            'a': DatasetPreprocessingSettings(AcceptedType.Int,
+                    EmptiesStrategy(ProcessingMode.AggregateFunction, aggregate_function=AggregateFunction.Max)),
+            'b': DatasetPreprocessingSettings(AcceptedType.Categorial,
+                    EmptiesStrategy(ProcessingMode.DeleteRow)),
         }
 
         with self.assertRaises(ValueError):
@@ -61,7 +67,7 @@ class PreprocessTests(unittest.TestCase):
             }
         )
         settings = {
-            'a': DatasetPreprocessingSettings('unsupported', EmptiesStrategy(ProcessingMode.FillWithAggregateFunction, aggregate_function=AggregateFunction.Max)),
+            'a': DatasetPreprocessingSettings('unsupported', EmptiesStrategy(ProcessingMode.AggregateFunction, aggregate_function=AggregateFunction.Max)),
         }
 
         with self.assertRaises(ValueError):
@@ -75,7 +81,7 @@ class PreprocessTests(unittest.TestCase):
             }
         )
         settings = {
-            'a': DatasetPreprocessingSettings('int', EmptiesStrategy(ProcessingMode.FillWithTypeDefault)),
+            'a': DatasetPreprocessingSettings(AcceptedType.Int, EmptiesStrategy(ProcessingMode.TypeDefault)),
         }
 
         with self.assertRaises(ValueError):
@@ -95,6 +101,28 @@ class PreprocessTests(unittest.TestCase):
         result = preprocess(dataset, settings)
 
         self.assertFalse(result.isnull().values.any())
+
+    def test_columnIsDroped(self):
+        dataset = get_dataset()
+        settings = {
+            'a': DatasetPreprocessingSettings(AcceptedType.Int, EmptiesStrategy(ProcessingMode.TypeDefault)),
+            'b': DatasetPreprocessingSettings(AcceptedType.Dropped, None),
+            'c': DatasetPreprocessingSettings(AcceptedType.Float, EmptiesStrategy(ProcessingMode.TypeDefault)),
+        }
+
+        result = preprocess(dataset, settings)
+
+        self.assertTrue('a' in result.columns)
+        self.assertFalse('b' in result.columns)
+        self.assertTrue('c' in result.columns)
+
+    def test_initialOrderSaved(self):
+        dataset = get_dataset()
+        settings = get_settings()
+
+        result = preprocess(dataset, settings)
+
+        self.assertEqual(list(dataset.columns), list(result.columns))
 
 
 if __name__ == '__main__':

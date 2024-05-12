@@ -4,8 +4,8 @@ from ..processing_mode import *
 from ..aggregate_function import *
 
 class OutliersDetectingMode(StrEnum):
-    MinMax = auto()
-    IQR = auto()
+    MinMax = 'MinMax'
+    IQR = 'IQR'
 
 class EncodingTechnique(StrEnum):
     OneHotEncoding = 'OneHotEncoding'
