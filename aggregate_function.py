@@ -1,8 +1,8 @@
-from enum import Enum
+from enum import StrEnum
 
-class AggregateFunction(Enum):
+class AggregateFunction(StrEnum):
     Max = 'Max'
     Min = 'Min'
-    Average = 'Average'
+    Mean = 'Mean'
     MostFrequent = 'MostFrequent'
     Median = 'Median'

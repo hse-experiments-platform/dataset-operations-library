@@ -1,6 +1,7 @@
 from enum import StrEnum
 
-class AcceptedTypes(StrEnum):
-    Int = 'int',
-    Float = 'float',
-    Enum = 'categorial'
+class AcceptedType(StrEnum):
+    Int = 'Int',
+    Float = 'Float',
+    Categorial = 'Categorial'
+    Dropped = 'Dropped'
